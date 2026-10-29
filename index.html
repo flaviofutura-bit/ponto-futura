@@ -2,79 +2,319 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Teste Ponto Futura</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ponto Futura</title>
+<meta name="theme-color" content="#0b4ea2">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ponto Futura">
 <style>
   *{box-sizing:border-box}
-  body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#f2f4f8;color:#1d2433}
-  header{background:#0b4ea2;color:#fff;padding:14px 16px}
-  header h1{margin:0;font-size:19px}
-  header p{margin:4px 0 0;font-size:13px;opacity:.9}
-  main{max-width:560px;margin:0 auto;padding:12px 16px 40px}
-  .card{background:#fff;border-radius:10px;padding:14px;margin-top:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  .card h2{margin:0 0 8px;font-size:16px}
-  button{background:#0b4ea2;color:#fff;border:0;border-radius:8px;padding:11px 14px;font-size:15px;cursor:pointer;margin:4px 6px 4px 0}
-  button.sec{background:#e3e9f3;color:#0b4ea2}
+  :root{--azul:#0b4ea2;--verde:#14843b;--vermelho:#b42323;--fundo:#f2f4f8;--texto:#1d2433;--cinza:#6b7385}
+  html,body{margin:0;height:100%}
+  body{font-family:Arial,Helvetica,sans-serif;background:var(--fundo);color:var(--texto)}
+  header{background:var(--azul);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  header h1{margin:0;font-size:18px}
+  header button{background:rgba(255,255,255,.16);color:#fff;padding:7px 11px;font-size:13px;margin:0}
+  main{max-width:620px;margin:0 auto;padding:12px 16px 40px}
+  .tela{display:none}
+  .tela.on{display:block}
+  .card{background:#fff;border-radius:12px;padding:16px;margin-top:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .card h2{margin:0 0 10px;font-size:17px}
+  button{background:var(--azul);color:#fff;border:0;border-radius:9px;padding:12px 16px;font-size:15px;cursor:pointer;margin:4px 6px 4px 0;font-family:inherit}
+  button.sec{background:#e3e9f3;color:var(--azul)}
+  button.perigo{background:#fde8e8;color:var(--vermelho)}
+  button.grande{width:100%;padding:16px;font-size:18px;margin:6px 0}
   button:disabled{opacity:.45;cursor:default}
-  .st{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:14px;background:#eef1f6}
+  input,select{width:100%;padding:11px;border:1px solid #c9d1de;border-radius:8px;font-size:16px;margin:4px 0 10px;font-family:inherit}
+  label{font-size:14px;color:var(--cinza)}
+  .msg{margin-top:10px;padding:10px 12px;border-radius:9px;font-size:15px;background:#eef1f6}
+  .msg:empty{display:none}
   .ok{background:#e3f6e8;color:#11652b}
   .erro{background:#fde8e8;color:#9b1c1c}
   .aviso{background:#fff5d6;color:#7a5a00}
-  .video-box{position:relative;width:100%;max-width:380px;margin-top:8px}
-  video{width:100%;border-radius:8px;background:#000;display:block;transform:scaleX(-1)}
-  canvas{position:absolute;left:0;top:0;width:100%;height:100%;transform:scaleX(-1)}
-  .linha{font-size:14px;margin:4px 0}
-  a{color:#0b4ea2}
+  .cam{position:relative;width:100%;max-width:420px;margin:10px auto 0;border-radius:12px;overflow:hidden;background:#000;aspect-ratio:3/4}
+  .cam video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
+  .cam .guia{position:absolute;inset:12% 18%;border:3px dashed rgba(255,255,255,.55);border-radius:50%}
+  .cam .guia.achou{border-color:#2ecc71;border-style:solid}
+  .cam .status{position:absolute;left:0;right:0;bottom:0;padding:12px;background:rgba(0,0,0,.55);color:#fff;text-align:center;font-size:17px}
+  .lista{list-style:none;padding:0;margin:8px 0 0}
+  .lista li{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #edf0f5;font-size:15px}
+  .lista li:last-child{border-bottom:0}
+  .tab{display:flex;gap:4px;overflow-x:auto;margin-top:8px}
+  .tab button{background:#e3e9f3;color:var(--azul);white-space:nowrap;margin:0}
+  .tab button.on{background:var(--azul);color:#fff}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid #edf0f5;vertical-align:top}
+  th{color:var(--cinza);font-weight:600}
+  .func{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #edf0f5;flex-wrap:wrap}
+  .func b{display:block}
+  .func small{color:var(--cinza)}
+  .tag{display:inline-block;font-size:12px;padding:2px 7px;border-radius:20px;margin-right:4px}
+  .tag.s{background:#e3f6e8;color:#11652b}.tag.n{background:#fde8e8;color:#9b1c1c}
+  .modal{position:fixed;inset:0;background:rgba(10,20,40,.55);display:none;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;z-index:20}
+  .modal.on{display:flex}
+  .modal .caixa{background:#fff;border-radius:14px;padding:18px;width:100%;max-width:460px;margin-top:20px}
+  .modal h3{margin:0 0 10px}
+  .resultado{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;z-index:30;padding:24px}
+  .resultado.on{display:flex}
+  .resultado.ok{background:var(--verde)}
+  .resultado.erro{background:var(--vermelho)}
+  .resultado .ic{font-size:72px;line-height:1}
+  .resultado h2{font-size:30px;margin:14px 0 6px}
+  .resultado p{font-size:20px;margin:4px 0}
+  .resultado button{background:rgba(255,255,255,.2);margin-top:22px}
+  /* terminal */
+  #tTerminal{background:#0d1626;min-height:100vh;color:#fff}
+  #tTerminal .topo{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
+  #tTerminal .relogio{font-size:44px;font-weight:bold;letter-spacing:1px}
+  #tTerminal .data{font-size:16px;opacity:.75}
+  #tTerminal .cam{max-width:520px}
+  #tTerminal .eng{background:none;color:rgba(255,255,255,.4);font-size:22px;padding:6px}
+  .centro{text-align:center}
+  .pequeno{font-size:13px;color:var(--cinza)}
+  a{color:var(--azul)}
+  #tAdmin main{max-width:1000px}
+  .rel{overflow-x:auto}
+  .rel table{font-size:13px;min-width:640px}
+  .rel h3{margin:18px 0 6px;font-size:16px}
+  .rel .neg{color:var(--vermelho);font-weight:bold}
+  .rel .pos{color:var(--verde);font-weight:bold}
+  .rel tr.tot td{border-top:2px solid #c9d1de;font-weight:bold;background:#f6f8fb}
+  .rel small{color:var(--cinza)}
+  @media print{
+    header,.tab,.no-print,#aEntrar{display:none!important}
+    body{background:#fff} main{max-width:none;padding:0} .card{box-shadow:none;padding:0}
+    .aba{display:none!important} .aba[data-a="rel"]{display:block!important}
+    .rel h3{page-break-after:avoid} .rel table{page-break-inside:auto}
+  }
 </style>
 </head>
 <body>
-<header>
-  <h1>Teste do Ponto — Futura</h1>
-  <p>Aparelho: <b id="aparelho"></b></p>
-</header>
-<main>
 
-  <div class="card">
-    <h2>1. Câmera</h2>
-    <button id="btnCam" onclick="testarCamera()">Abrir câmera</button>
-    <div class="st" id="stCam">Ainda não testado.</div>
-    <div class="video-box" id="vbox" style="display:none">
-      <video id="video" autoplay playsinline muted></video>
-      <canvas id="overlay"></canvas>
+<!-- ===================== INÍCIO ===================== -->
+<div class="tela" id="tInicio">
+  <header><h1>Ponto Futura</h1></header>
+  <main>
+    <div class="card centro">
+      <h2>Bem-vindo(a)!</h2>
+      <p>Como você vai usar este aparelho?</p>
+      <button class="grande" onclick="irLogin()">Sou colaborador — entrar</button>
+      <button class="grande sec" onclick="irAdmin()">Administrador</button>
     </div>
-  </div>
+  </main>
+</div>
 
-  <div class="card">
-    <h2>2. Rosto e piscada</h2>
-    <p class="linha">Olhe para a câmera. Quando o quadro ficar verde, <b>pisque os olhos</b>.</p>
-    <div class="st" id="stRosto">Aguardando a câmera.</div>
-    <div class="st" id="stPiscar">Piscada: aguardando.</div>
-  </div>
+<!-- ===================== LOGIN COLABORADOR ===================== -->
+<div class="tela" id="tLogin">
+  <header><h1>Entrar</h1><button onclick="mostrar('tInicio')">Voltar</button></header>
+  <main>
+    <div class="card">
+      <label>Login</label>
+      <input id="lLogin" autocomplete="username" autocapitalize="none" autocorrect="off">
+      <label>Senha</label>
+      <input id="lSenha" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')entrar()">
+      <button class="grande" id="btnEntrar" onclick="entrar()">Entrar</button>
+      <div class="msg" id="lMsg"></div>
+      <p class="pequeno">Você só precisa entrar uma vez neste celular. Depois, é só abrir e olhar para a câmera.</p>
+    </div>
+  </main>
+</div>
 
-  <div class="card">
-    <h2>3. Reconhecer quem é</h2>
-    <p class="linha">Toque em "Cadastrar meu rosto". Depois toque em "Reconhecer" (pode pedir para outra pessoa testar também).</p>
-    <button id="btnCad" onclick="cadastrar()" disabled>Cadastrar meu rosto</button>
-    <button id="btnRec" class="sec" onclick="reconhecer()" disabled>Reconhecer</button>
-    <div class="st" id="stRec">Aguardando a câmera.</div>
-  </div>
+<!-- ===================== COLABORADOR ===================== -->
+<div class="tela" id="tColab">
+  <header><h1 id="cOla">Olá!</h1><button onclick="sairColab()">Sair</button></header>
+  <main>
+    <div class="card">
+      <div class="cam" id="cCam" style="display:none">
+        <video id="cVideo" autoplay playsinline muted></video>
+        <div class="guia" id="cGuia"></div>
+        <div class="status" id="cStatus">Abrindo a câmera...</div>
+      </div>
+      <button class="grande" id="cBtnBater" onclick="iniciarBatida()">Bater ponto</button>
+      <div class="msg" id="cMsg"></div>
+    </div>
+    <div class="card">
+      <h2>Suas batidas de hoje</h2>
+      <ul class="lista" id="cLista"><li>Carregando...</li></ul>
+    </div>
+  </main>
+</div>
 
-  <div class="card">
-    <h2>4. Localização</h2>
-    <button onclick="testarLocal()">Testar localização</button>
-    <div class="st" id="stLocal">Ainda não testado.</div>
-    <div id="infoLocal"></div>
+<!-- ===================== TERMINAL ===================== -->
+<div class="tela" id="tTerminal">
+  <div class="topo">
+    <div><div class="relogio" id="tRelogio">--:--</div><div class="data" id="tData"></div></div>
+    <button class="eng" title="Configurações" onclick="sairTerminalPedir()">⚙</button>
   </div>
+  <div class="cam" id="tCam">
+    <video id="tVideo" autoplay playsinline muted></video>
+    <div class="guia" id="tGuia"></div>
+    <div class="status" id="tStatus">Iniciando...</div>
+  </div>
+  <p class="centro" style="opacity:.6;margin-top:14px" id="tNome"></p>
+</div>
 
-</main>
+<!-- ===================== ADMIN ===================== -->
+<div class="tela" id="tAdmin">
+  <header><h1>Administrador</h1><button onclick="sairAdmin()">Sair</button></header>
+  <main>
+    <div id="aEntrar" class="card">
+      <h2 id="aEntrarTit">Entrar como administrador</h2>
+      <p class="pequeno" id="aEntrarTxt"></p>
+      <label>Senha do administrador</label>
+      <input id="aSenha" type="password" onkeydown="if(event.key==='Enter')adminEntrar()">
+      <div id="aSenha2Box" style="display:none"><label>Repita a senha</label><input id="aSenha2" type="password"></div>
+      <button class="grande" onclick="adminEntrar()">Entrar</button>
+      <div class="msg" id="aMsg"></div>
+    </div>
+
+    <div id="aPainel" style="display:none">
+      <div class="tab" id="aTabs">
+        <button data-t="func" class="on">Colaboradores</button>
+        <button data-t="batidas">Batidas do dia</button>
+        <button data-t="rel">Relatório</button>
+        <button data-t="local">Local da escola</button>
+        <button data-t="term">Terminais</button>
+        <button data-t="senha">Senha</button>
+      </div>
+
+      <div class="card aba" data-a="func">
+        <h2>Colaboradores</h2>
+        <p class="pequeno">Os colaboradores vêm do cadastro do Futura DP (somente ativos). Cadastre o rosto e, se ele for usar o celular, crie um login.</p>
+        <div id="aFuncs">Carregando...</div>
+      </div>
+
+      <div class="card aba" data-a="batidas" style="display:none">
+        <h2>Batidas do dia</h2>
+        <input type="date" id="aData" onchange="carregarBatidas()">
+        <div id="aBatidas"></div>
+      </div>
+
+      <div class="card aba" data-a="rel" style="display:none">
+        <h2>Ponto × Escala</h2>
+        <p class="pequeno no-print">Compara as batidas reais com a escala do Futura DP. Nada é alterado na escala.</p>
+        <div class="no-print" style="display:flex;gap:8px;flex-wrap:wrap">
+          <div style="flex:1;min-width:150px"><label>Colaborador</label><select id="rFunc"><option value="">Todos</option></select></div>
+          <div style="flex:1;min-width:120px"><label>De</label><input type="date" id="rIni"></div>
+          <div style="flex:1;min-width:120px"><label>Até</label><input type="date" id="rFim"></div>
+        </div>
+        <button class="no-print" onclick="gerarRelatorio()">Gerar relatório</button>
+        <button class="sec no-print" onclick="window.print()">Imprimir</button>
+        <div id="rOut" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card aba" data-a="local" style="display:none">
+        <h2>Local da escola</h2>
+        <div id="aLocalInfo" class="msg"></div>
+        <p class="pequeno">Faça isto <b>estando dentro da escola</b>, de preferência pelo celular com o GPS ligado.</p>
+        <button onclick="definirLocal()">Usar minha localização atual como a escola</button>
+        <label style="display:block;margin-top:12px">Distância máxima permitida (metros)</label>
+        <input type="number" id="aRaio" min="30" max="1000" step="10">
+        <button class="sec" onclick="salvarRaio()">Salvar distância</button>
+        <div class="msg" id="aLocalMsg"></div>
+      </div>
+
+      <div class="card aba" data-a="term" style="display:none">
+        <h2>Terminais da escola</h2>
+        <p class="pequeno">Um terminal é um computador, tablet ou celular <b>fixo da escola</b>. Nele ninguém faz login: o colaborador só olha para a câmera e o sistema reconhece quem é.</p>
+        <label>Nome deste aparelho</label>
+        <input id="aTermNome" placeholder="ex.: Computador da recepção">
+        <button onclick="criarTerminal()">Transformar ESTE aparelho em terminal</button>
+        <div class="msg" id="aTermMsg"></div>
+        <h2 style="margin-top:18px">Terminais autorizados</h2>
+        <div id="aTerms"></div>
+      </div>
+
+      <div class="card aba" data-a="senha" style="display:none">
+        <h2>Trocar a senha do administrador</h2>
+        <label>Nova senha (mínimo 6 caracteres)</label>
+        <input type="password" id="aNova">
+        <button onclick="trocarSenha()">Salvar nova senha</button>
+        <div class="msg" id="aSenhaMsg"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ===================== MODAIS ===================== -->
+<div class="modal" id="mRosto">
+  <div class="caixa">
+    <h3>Cadastrar rosto — <span id="mRostoNome"></span></h3>
+    <label style="display:flex;gap:8px;align-items:flex-start;color:var(--texto)">
+      <input type="checkbox" id="mConsent" style="width:auto;margin-top:3px">
+      O colaborador autorizou, por escrito, o uso da imagem do rosto dele para o registro de ponto (LGPD).
+    </label>
+    <div class="cam" id="mCam" style="display:none">
+      <video id="mVideo" autoplay playsinline muted></video>
+      <div class="guia" id="mGuia"></div>
+      <div class="status" id="mStatus"></div>
+    </div>
+    <button id="mBtnCap" onclick="capturarCadastro()">Abrir câmera e cadastrar</button>
+    <button class="sec" onclick="fecharRosto()">Fechar</button>
+    <div class="msg" id="mMsg"></div>
+  </div>
+</div>
+
+<div class="modal" id="mLogin">
+  <div class="caixa">
+    <h3>Login de — <span id="mLoginNome"></span></h3>
+    <p class="pequeno">O colaborador vai usar este login e senha uma única vez, no celular dele.</p>
+    <label>Login (sem espaço e sem acento)</label>
+    <input id="mLogLogin" autocapitalize="none" autocorrect="off" placeholder="ex.: vanda">
+    <label>Senha (mínimo 4 caracteres)</label>
+    <input id="mLogSenha" placeholder="ex.: 4821">
+    <button onclick="salvarLogin()">Salvar</button>
+    <button class="sec" onclick="fechar('mLogin')">Fechar</button>
+    <div class="msg" id="mLogMsg"></div>
+  </div>
+</div>
+
+<div class="modal" id="mSairTerm">
+  <div class="caixa">
+    <h3>Configurações do terminal</h3>
+    <label>Senha do administrador</label>
+    <input type="password" id="mstSenha">
+    <button class="perigo" onclick="sairTerminal()">Desligar o modo terminal neste aparelho</button>
+    <button class="sec" onclick="fechar('mSairTerm');retomarTerminal()">Cancelar</button>
+    <div class="msg" id="mstMsg"></div>
+  </div>
+</div>
+
+<div class="resultado" id="res">
+  <div class="ic" id="resIc"></div>
+  <h2 id="resTit"></h2>
+  <p id="resTxt"></p>
+  <p id="resTxt2" style="opacity:.85;font-size:16px"></p>
+  <button id="resBtn" onclick="fecharResultado()">OK</button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/dist/face-api.js"></script>
 <script>
+/* ===================== CONFIGURAÇÃO ===================== */
+var API = 'https://script.google.com/macros/s/AKfycbwGj3RDO6gKW01k9tywd1YOc5yy3AWWyBEqtWD7XJBNyqpN0oFBY3NpDwsoHBzsGw4/exec';
 var MODELOS = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/model/';
-var modelosOk = false, rostoVisto = false, piscadas = 0, olhosFechados = false, baseEAR = 0;
-var cadastro = null;
 
-function qualAparelho(){
+/* ===================== UTILITÁRIOS ===================== */
+function $(id){ return document.getElementById(id); }
+function ls(k, v){ try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch(e) { return null; } }
+function msg(id, txt, cls){ var e = $(id); e.textContent = txt || ''; e.className = 'msg ' + (cls || ''); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function mostrar(id){ document.querySelectorAll('.tela').forEach(function(t){ t.classList.toggle('on', t.id === id); }); }
+function abrir(id){ $(id).classList.add('on'); }
+function fechar(id){ $(id).classList.remove('on'); }
+
+function api(acao, dados){
+  var p = Object.assign({ acao: acao }, dados || {});
+  return fetch(API, { method: 'POST', body: JSON.stringify(p) })
+    .then(function(r){ return r.json(); })
+    .catch(function(){ throw new Error('Sem conexão com o servidor. Verifique a internet e tente de novo.'); })
+    .then(function(r){ if (!r.ok) throw new Error(r.erro); return r.dados; });
+}
+
+function aparelho(){
   var u = navigator.userAgent;
   if (/iPhone/i.test(u)) return 'iPhone';
   if (/iPad/i.test(u)) return 'iPad';
@@ -83,129 +323,492 @@ function qualAparelho(){
   if (/Mac/i.test(u)) return 'Mac';
   return 'Outro';
 }
-document.getElementById('aparelho').textContent = qualAparelho();
 
-function st(id, txt, cls){ var e = document.getElementById(id); e.textContent = txt; e.className = 'st ' + (cls || ''); }
-
-// ---------- câmera ----------
-function testarCamera(){
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-    st('stCam', 'Este navegador não permite usar a câmera.', 'erro'); return;
+/* ===================== RECONHECIMENTO DE ROSTO ===================== */
+var modelosP = null, optDet = null;
+function carregarModelos(){
+  if (!modelosP){
+    if (typeof faceapi === 'undefined') return Promise.reject(new Error('Não foi possível carregar o reconhecimento de rosto. Verifique a internet.'));
+    modelosP = Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri(MODELOS),
+      faceapi.nets.faceLandmark68Net.loadFromUri(MODELOS),
+      faceapi.nets.faceRecognitionNet.loadFromUri(MODELOS)
+    ]).then(function(){ optDet = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }); })
+      .catch(function(e){ modelosP = null; throw e; });
   }
-  st('stCam', 'Pedindo permissão para usar a câmera...');
-  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 } }, audio: false })
-    .then(function(stream){
-      var v = document.getElementById('video');
-      v.srcObject = stream;
-      document.getElementById('vbox').style.display = 'block';
-      document.getElementById('btnCam').disabled = true;
-      st('stCam', 'Câmera funcionando ✓', 'ok');
-      carregarModelos();
-    })
-    .catch(function(err){
-      var msg = 'Não foi possível abrir a câmera (' + err.name + ').';
-      if (err.name === 'NotAllowedError') msg += ' A permissão foi negada. Toque no cadeado ao lado do endereço e libere a câmera.';
-      if (err.name === 'NotFoundError') msg += ' Nenhuma câmera encontrada neste aparelho.';
-      st('stCam', msg, 'erro');
+  return modelosP;
+}
+
+var streams = {};
+function abrirCamera(videoId){
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+    return Promise.reject(new Error('Este navegador não permite usar a câmera.'));
+  return navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 } }, audio: false })
+    .then(function(s){ streams[videoId] = s; var v = $(videoId); v.srcObject = s; return new Promise(function(ok){ v.onloadedmetadata = function(){ v.play(); ok(v); }; if (v.readyState >= 1) ok(v); }); })
+    .catch(function(e){
+      if (e.name === 'NotAllowedError') throw new Error('A câmera foi bloqueada. Toque no cadeado ao lado do endereço (ou nas configurações do navegador) e libere a câmera para este site.');
+      if (e.name === 'NotFoundError') throw new Error('Nenhuma câmera encontrada neste aparelho.');
+      throw e;
     });
 }
-
-// ---------- rosto ----------
-function carregarModelos(){
-  if (typeof faceapi === 'undefined'){ st('stRosto', 'A biblioteca de rosto não carregou.', 'erro'); return; }
-  st('stRosto', 'Carregando o reconhecimento de rosto... (na primeira vez pode levar alguns segundos)');
-  var t0 = Date.now();
-  Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri(MODELOS),
-    faceapi.nets.faceLandmark68Net.loadFromUri(MODELOS),
-    faceapi.nets.faceRecognitionNet.loadFromUri(MODELOS)
-  ]).then(function(){
-    modelosOk = true;
-    st('stRosto', 'Pronto (carregou em ' + ((Date.now() - t0) / 1000).toFixed(1) + ' s). Procurando o seu rosto...', 'aviso');
-    document.getElementById('btnCad').disabled = false;
-    try { var c = localStorage.getItem('teste_cadastro'); if (c) { cadastro = new Float32Array(JSON.parse(c)); } } catch(e) {}
-    document.getElementById('btnRec').disabled = !cadastro;
-    st('stRec', cadastro ? 'Já existe um rosto cadastrado neste aparelho. Toque em "Reconhecer".' : 'Nenhum rosto cadastrado ainda.');
-    loop();
-  }).catch(function(err){ st('stRosto', 'Erro ao carregar o reconhecimento de rosto: ' + err.message, 'erro'); });
+function fecharCamera(videoId){
+  var s = streams[videoId];
+  if (s) s.getTracks().forEach(function(t){ t.stop(); });
+  delete streams[videoId];
+  var v = $(videoId); if (v) v.srcObject = null;
 }
-
-var opcDet = null;
-function opc(){ return opcDet || (opcDet = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 })); }
 
 function dist(a, b){ return Math.hypot(a.x - b.x, a.y - b.y); }
 function ear(p){ return (dist(p[1], p[5]) + dist(p[2], p[4])) / (2 * dist(p[0], p[3])); }
 
-function loop(){
-  var v = document.getElementById('video'), c = document.getElementById('overlay');
-  if (!v.videoWidth){ setTimeout(loop, 300); return; }
-  faceapi.detectSingleFace(v, opc()).withFaceLandmarks().then(function(r){
-    c.width = v.videoWidth; c.height = v.videoHeight;
-    var ctx = c.getContext('2d'); ctx.clearRect(0, 0, c.width, c.height);
-    if (r){
-      var b = r.detection.box;
-      ctx.strokeStyle = '#2ecc71'; ctx.lineWidth = 4; ctx.strokeRect(b.x, b.y, b.width, b.height);
-      rostoVisto = true;
-      st('stRosto', 'Rosto encontrado ✓', 'ok');
-      var e = (ear(r.landmarks.getLeftEye()) + ear(r.landmarks.getRightEye())) / 2;
-      baseEAR = baseEAR ? Math.max(baseEAR * 0.995, e) : e;      // olho aberto de referência
-      if (!olhosFechados && e < baseEAR * 0.72) olhosFechados = true;
-      else if (olhosFechados && e > baseEAR * 0.85){
-        olhosFechados = false; piscadas++;
-        st('stPiscar', 'Piscada detectada ✓ (' + piscadas + 'x) — isso prova que é uma pessoa de verdade, não uma foto.', 'ok');
-      }
-    } else if (rostoVisto){
-      st('stRosto', 'Rosto fora do quadro — olhe para a câmera.', 'aviso');
+function foto(video){
+  var c = document.createElement('canvas'), w = 360;
+  c.width = w; c.height = Math.round(w * video.videoHeight / video.videoWidth);
+  c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.7);
+}
+
+/**
+ * Espera achar um rosto, pede para piscar (prova de que é uma pessoa e não uma foto)
+ * e devolve { descritor, foto }. opt.amostras > 1 devolve vários descritores (cadastro).
+ */
+function capturarRosto(videoId, guiaId, statusId, opt){
+  opt = opt || {};
+  var v = $(videoId), guia = $(guiaId), stt = function(t){ $(statusId).textContent = t; };
+  var ctl = { cancelado: false };
+  var p = new Promise(function(ok, falha){
+    var base = 0, fechado = false, piscou = false, semRosto = 0, inicio = Date.now();
+    var amostras = [], qtd = opt.amostras || 1;
+    stt('Olhe para a câmera');
+    function passo(){
+      if (ctl.cancelado) return falha(new Error('cancelado'));
+      if (opt.tempoMax && Date.now() - inicio > opt.tempoMax) return falha(new Error('tempo'));
+      if (!v.videoWidth){ return setTimeout(passo, 200); }
+      var tarefa = piscou ? faceapi.detectSingleFace(v, optDet).withFaceLandmarks().withFaceDescriptor()
+                          : faceapi.detectSingleFace(v, optDet).withFaceLandmarks();
+      tarefa.then(function(r){
+        if (ctl.cancelado) return falha(new Error('cancelado'));
+        if (!r){
+          guia.classList.remove('achou'); semRosto++;
+          if (semRosto > 3) stt(piscou ? 'Continue olhando para a câmera' : 'Olhe para a câmera');
+          return setTimeout(passo, 120);
+        }
+        semRosto = 0; guia.classList.add('achou');
+        var b = r.detection.box;
+        if (b.width < v.videoWidth * 0.22){ stt('Aproxime mais o rosto'); return setTimeout(passo, 120); }
+        var e = (ear(r.landmarks.getLeftEye()) + ear(r.landmarks.getRightEye())) / 2;
+        if (!piscou){
+          base = base ? Math.max(base * 0.995, e) : e;
+          stt('Agora pisque os olhos 😉');
+          if (!fechado && e < base * 0.72) fechado = true;
+          else if (fechado && e > base * 0.85){ piscou = true; stt('Pronto, segure um instante...'); }
+          return setTimeout(passo, 40);
+        }
+        if (e < base * 0.8) return setTimeout(passo, 60);  // espera abrir os olhos
+        amostras.push(Array.from(r.descriptor));
+        if (amostras.length < qtd){ stt('Capturando ' + (amostras.length + 1) + ' de ' + qtd + '... vire levemente o rosto'); return setTimeout(passo, 500); }
+        ok({ descritor: amostras[0], descritores: amostras, foto: foto(v) });
+      }).catch(function(){ setTimeout(passo, 300); });
     }
-    setTimeout(loop, 60);
-  }).catch(function(){ setTimeout(loop, 500); });
+    passo();
+  });
+  p.ctl = ctl;
+  return p;
 }
 
-// ---------- reconhecer ----------
-function descritor(){
-  var v = document.getElementById('video');
-  return faceapi.detectSingleFace(v, opc()).withFaceLandmarks().withFaceDescriptor();
+/* ===================== LOCALIZAÇÃO ===================== */
+var gps = { melhor: null, watch: null, erro: null };
+function iniciarGPS(){
+  pararGPS(); gps.melhor = null; gps.erro = null;
+  if (!navigator.geolocation){ gps.erro = 'Este navegador não permite pegar a localização.'; return; }
+  gps.watch = navigator.geolocation.watchPosition(function(p){
+    if (!gps.melhor || p.coords.accuracy <= gps.melhor.precisao)
+      gps.melhor = { lat: p.coords.latitude, lng: p.coords.longitude, precisao: p.coords.accuracy };
+  }, function(e){
+    gps.erro = e.code === 1 ? 'A localização foi bloqueada. Libere a localização para este site nas configurações do navegador.' : 'Não foi possível pegar a localização. Ative o GPS.';
+  }, { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 });
 }
-function cadastrar(){
-  st('stRec', 'Cadastrando... olhe para a câmera.');
-  descritor().then(function(r){
-    if (!r){ st('stRec', 'Não achei o rosto. Olhe para a câmera e tente de novo.', 'erro'); return; }
-    cadastro = r.descriptor;
-    try { localStorage.setItem('teste_cadastro', JSON.stringify(Array.from(cadastro))); } catch(e) {}
-    document.getElementById('btnRec').disabled = false;
-    st('stRec', 'Rosto cadastrado ✓ Agora toque em "Reconhecer".', 'ok');
-  });
-}
-function reconhecer(){
-  if (!cadastro) return;
-  st('stRec', 'Reconhecendo...');
-  var t0 = Date.now();
-  descritor().then(function(r){
-    if (!r){ st('stRec', 'Não achei o rosto. Olhe para a câmera e tente de novo.', 'erro'); return; }
-    var d = faceapi.euclideanDistance(cadastro, r.descriptor);
-    var seg = ((Date.now() - t0) / 1000).toFixed(1);
-    var sem = Math.max(0, Math.round((1 - d) * 100));
-    if (d < 0.5) st('stRec', 'É a MESMA pessoa cadastrada ✓ (semelhança ' + sem + '%, levou ' + seg + ' s)', 'ok');
-    else st('stRec', 'NÃO é a pessoa cadastrada ✗ (semelhança ' + sem + '%, levou ' + seg + ' s)', 'erro');
+function pararGPS(){ if (gps.watch !== null && navigator.geolocation) navigator.geolocation.clearWatch(gps.watch); gps.watch = null; }
+function esperarGPS(maxMs){
+  return new Promise(function(ok, falha){
+    var t0 = Date.now();
+    (function ver(){
+      if (gps.melhor && gps.melhor.precisao <= 50) return ok(gps.melhor);
+      if (Date.now() - t0 > maxMs){ if (gps.melhor) return ok(gps.melhor); return falha(new Error(gps.erro || 'Não foi possível pegar a localização. Ative o GPS e tente de novo.')); }
+      if (gps.erro && !gps.melhor) return falha(new Error(gps.erro));
+      setTimeout(ver, 300);
+    })();
   });
 }
 
-// ---------- localização ----------
-function testarLocal(){
-  if (!navigator.geolocation){ st('stLocal', 'Este navegador não permite pegar a localização.', 'erro'); return; }
-  st('stLocal', 'Pegando a localização... (pode levar alguns segundos)');
-  navigator.geolocation.getCurrentPosition(function(p){
-    var lat = p.coords.latitude, lng = p.coords.longitude, prec = Math.round(p.coords.accuracy);
-    var qual = prec <= 50 ? 'boa ✓' : (prec <= 200 ? 'média' : 'ruim ✗');
-    st('stLocal', 'Localização obtida — precisão ± ' + prec + ' m (' + qual + ')', prec <= 50 ? 'ok' : (prec <= 200 ? 'aviso' : 'erro'));
-    document.getElementById('infoLocal').innerHTML =
-      '<p class="linha">Coordenadas: ' + lat.toFixed(6) + ', ' + lng.toFixed(6) + '</p>' +
-      '<p class="linha"><a target="_blank" href="https://www.google.com/maps?q=' + lat + ',' + lng + '">Ver no mapa onde o aparelho acha que está</a></p>';
-  }, function(err){
-    var m = { 1: 'Permissão negada. Toque no cadeado ao lado do endereço e libere a localização.', 2: 'Localização indisponível.', 3: 'Demorou demais para responder.' };
-    st('stLocal', 'Não foi possível pegar a localização: ' + (m[err.code] || err.message), 'erro');
-  }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+/* ===================== RESULTADO (tela cheia) ===================== */
+var resTimer = null, resDepois = null;
+function resultado(ok, tit, txt, txt2, autoMs, depois){
+  var r = $('res');
+  r.className = 'resultado on ' + (ok ? 'ok' : 'erro');
+  $('resIc').textContent = ok ? '✓' : '✗';
+  $('resTit').textContent = tit; $('resTxt').textContent = txt || ''; $('resTxt2').textContent = txt2 || '';
+  $('resBtn').style.display = autoMs ? 'none' : '';
+  resDepois = depois || null;
+  clearTimeout(resTimer);
+  if (autoMs) resTimer = setTimeout(fecharResultado, autoMs);
 }
+function fecharResultado(){ clearTimeout(resTimer); $('res').className = 'resultado'; var d = resDepois; resDepois = null; if (d) d(); }
+
+/* ===================== INÍCIO ===================== */
+function iniciar(){
+  if (API.indexOf('http') !== 0){ document.body.innerHTML = '<p style="padding:20px">Sistema ainda não configurado.</p>'; return; }
+  if (ls('pf_terminal')) return abrirTerminal();
+  if (ls('pf_sessao')) return abrirColab();
+  if (location.hash === '#admin') return irAdmin();
+  mostrar('tInicio');
+}
+function irLogin(){ mostrar('tLogin'); msg('lMsg'); setTimeout(function(){ $('lLogin').focus(); }, 50); }
+
+/* ===================== COLABORADOR ===================== */
+function entrar(){
+  var l = $('lLogin').value.trim(), s = $('lSenha').value;
+  if (!l || !s) return msg('lMsg', 'Preencha o login e a senha.', 'erro');
+  $('btnEntrar').disabled = true; msg('lMsg', 'Entrando...');
+  api('login', { login: l, senha: s }).then(function(d){
+    ls('pf_sessao', d.sessao); ls('pf_nome', d.nome);
+    $('lSenha').value = '';
+    abrirColab();
+  }).catch(function(e){ msg('lMsg', e.message, 'erro'); }).then(function(){ $('btnEntrar').disabled = false; });
+}
+
+function sessaoExpirou(e){
+  if (e && e.message === 'SESSAO'){ ls('pf_sessao', null); ls('pf_nome', null); irLogin(); msg('lMsg', 'Sua sessão expirou. Entre de novo.', 'aviso'); return true; }
+  return false;
+}
+
+function abrirColab(){
+  mostrar('tColab');
+  $('cOla').textContent = 'Olá, ' + (ls('pf_nome') || '') + '!';
+  carregarMeuDia().then(function(d){
+    if (d && d.temRosto) iniciarBatida();
+  });
+  carregarModelos().catch(function(){});
+}
+
+function carregarMeuDia(){
+  return api('meuDia', { sessao: ls('pf_sessao') }).then(function(d){
+    ls('pf_nome', d.nome);
+    $('cOla').textContent = 'Olá, ' + d.nome + '!';
+    pintarBatidas(d.batidas);
+    if (!d.temRosto) msg('cMsg', 'Seu rosto ainda não foi cadastrado. Procure o administrador.', 'aviso');
+    return d;
+  }).catch(function(e){ if (!sessaoExpirou(e)) msg('cMsg', e.message, 'erro'); });
+}
+
+function pintarBatidas(bs){
+  $('cLista').innerHTML = bs && bs.length
+    ? bs.map(function(b){ return '<li><span>' + esc(b.tipo) + '</span><b>' + esc(b.hora) + '</b></li>'; }).join('')
+    : '<li><span>Nenhuma batida ainda.</span></li>';
+}
+
+var capColab = null;
+function iniciarBatida(){
+  msg('cMsg');
+  $('cBtnBater').style.display = 'none';
+  $('cCam').style.display = 'block';
+  $('cStatus').textContent = 'Abrindo a câmera...';
+  iniciarGPS();
+  Promise.all([abrirCamera('cVideo'), carregarModelos()]).then(function(){
+    capColab = capturarRosto('cVideo', 'cGuia', 'cStatus', { tempoMax: 60000 });
+    return capColab;
+  }).then(function(r){
+    $('cStatus').textContent = 'Conferindo a localização...';
+    return esperarGPS(15000).then(function(g){
+      $('cStatus').textContent = 'Registrando...';
+      return api('baterCelular', { sessao: ls('pf_sessao'), descritor: r.descritor, foto: r.foto,
+        lat: g.lat, lng: g.lng, precisao: g.precisao, aparelho: aparelho() });
+    });
+  }).then(function(d){
+    encerrarBatida();
+    pintarBatidas(d.batidas);
+    if (d.repetida) resultado(true, 'Ponto já registrado', d.tipo + ' às ' + d.hora, 'Você bateu o ponto agora há pouco.');
+    else resultado(true, d.tipo, 'às ' + d.hora, 'Ponto registrado, ' + d.nome + '!');
+  }).catch(function(e){
+    encerrarBatida();
+    if (e.message === 'cancelado') return;
+    if (sessaoExpirou(e)) return;
+    if (e.message === 'tempo') return msg('cMsg', 'Não consegui ver o seu rosto. Toque em "Bater ponto" para tentar de novo.', 'aviso');
+    resultado(false, 'Ponto NÃO registrado', e.message, '');
+  });
+}
+function encerrarBatida(){
+  if (capColab && capColab.ctl) capColab.ctl.cancelado = true;
+  fecharCamera('cVideo'); pararGPS();
+  $('cCam').style.display = 'none';
+  $('cBtnBater').style.display = '';
+}
+function sairColab(){
+  encerrarBatida();
+  api('sair', { sessao: ls('pf_sessao') }).catch(function(){});
+  ls('pf_sessao', null); ls('pf_nome', null);
+  mostrar('tInicio');
+}
+document.addEventListener('visibilitychange', function(){
+  if (document.hidden && $('tColab').classList.contains('on')) encerrarBatida();
+});
+
+/* ===================== TERMINAL ===================== */
+var termAtivo = false, capTerm = null;
+function abrirTerminal(){
+  mostrar('tTerminal');
+  $('tNome').textContent = ls('pf_terminalNome') || '';
+  relogio(); if (!window._rel) window._rel = setInterval(relogio, 1000);
+  try { if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(function(){}); } catch(e) {}
+  $('tStatus').textContent = 'Carregando...';
+  api('terminalOk', { terminal: ls('pf_terminal') }).then(function(){
+    return Promise.all([abrirCamera('tVideo'), carregarModelos()]);
+  }).then(function(){ termAtivo = true; cicloTerminal(); })
+    .catch(function(e){
+      if (e.message === 'TERMINAL'){ ls('pf_terminal', null); ls('pf_terminalNome', null); $('tStatus').textContent = 'Este terminal foi desativado. Recarregue a página.'; return; }
+      $('tStatus').textContent = e.message;
+      setTimeout(abrirTerminal, 15000);
+    });
+}
+function relogio(){
+  var d = new Date();
+  $('tRelogio').textContent = ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  $('tData').textContent = d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' });
+}
+function cicloTerminal(){
+  if (!termAtivo) return;
+  capTerm = capturarRosto('tVideo', 'tGuia', 'tStatus', {});
+  capTerm.then(function(r){
+    $('tStatus').textContent = 'Reconhecendo...';
+    return api('baterTerminal', { terminal: ls('pf_terminal'), descritor: r.descritor, foto: r.foto, aparelho: aparelho() });
+  }).then(function(d){
+    if (d.repetida) resultado(true, d.nome, 'Ponto já registrado: ' + d.tipo + ' às ' + d.hora, '', 4000, proximo);
+    else resultado(true, d.nome, d.tipo + ' às ' + d.hora, 'Ponto registrado!', 4000, proximo);
+  }).catch(function(e){
+    if (e.message === 'cancelado') return;
+    resultado(false, 'Não registrado', e.message, '', 4000, proximo);
+  });
+  function proximo(){ $('tGuia').classList.remove('achou'); setTimeout(cicloTerminal, 1500); }
+}
+function sairTerminalPedir(){
+  termAtivo = false; if (capTerm && capTerm.ctl) capTerm.ctl.cancelado = true;
+  $('mstSenha').value = ''; msg('mstMsg'); abrir('mSairTerm');
+}
+function retomarTerminal(){ if (!termAtivo){ termAtivo = true; cicloTerminal(); } }
+function sairTerminal(){
+  api('adminLogin', { senha: $('mstSenha').value }).then(function(){
+    ls('pf_terminal', null); ls('pf_terminalNome', null);
+    fecharCamera('tVideo'); fechar('mSairTerm'); location.reload();
+  }).catch(function(e){ msg('mstMsg', e.message, 'erro'); });
+}
+
+/* ===================== ADMINISTRADOR ===================== */
+var admTok = null, admFuncs = [], admCriar = false;
+try { admTok = sessionStorage.getItem('pf_adm'); } catch(e) {}
+
+function irAdmin(){
+  mostrar('tAdmin');
+  if (admTok) return abrirPainel();
+  $('aEntrar').style.display = ''; $('aPainel').style.display = 'none'; msg('aMsg', 'Carregando...');
+  api('config').then(function(c){
+    admCriar = !c.temAdmin;
+    $('aEntrarTit').textContent = admCriar ? 'Criar a senha do administrador' : 'Entrar como administrador';
+    $('aEntrarTxt').textContent = admCriar ? 'Primeiro acesso: escolha a senha do administrador (mínimo 6 caracteres). Guarde bem essa senha.' : '';
+    $('aSenha2Box').style.display = admCriar ? '' : 'none';
+    msg('aMsg');
+  }).catch(function(e){ msg('aMsg', e.message, 'erro'); });
+}
+function adminEntrar(){
+  var s = $('aSenha').value;
+  if (admCriar && s !== $('aSenha2').value) return msg('aMsg', 'As senhas não são iguais.', 'erro');
+  msg('aMsg', 'Entrando...');
+  api(admCriar ? 'adminCriar' : 'adminLogin', { senha: s }).then(function(d){
+    admTok = d.token; try { sessionStorage.setItem('pf_adm', admTok); } catch(e) {}
+    $('aSenha').value = ''; $('aSenha2').value = '';
+    abrirPainel();
+  }).catch(function(e){ msg('aMsg', e.message, 'erro'); });
+}
+function adm(acao, dados){
+  return api(acao, Object.assign({ token: admTok }, dados || {})).catch(function(e){
+    if (e.message === 'ADMIN'){ sairAdmin(true); throw new Error('Sua sessão de administrador expirou. Entre de novo.'); }
+    throw e;
+  });
+}
+function sairAdmin(semVoltar){
+  admTok = null; try { sessionStorage.removeItem('pf_adm'); } catch(e) {}
+  if (semVoltar === true){ irAdmin(); return; }
+  if (location.hash === '#admin') history.replaceState(null, '', location.pathname);
+  iniciar();
+}
+function abrirPainel(){
+  $('aEntrar').style.display = 'none'; $('aPainel').style.display = '';
+  aba('func');
+}
+document.getElementById('aTabs').addEventListener('click', function(e){ if (e.target.dataset.t) aba(e.target.dataset.t); });
+function aba(t){
+  document.querySelectorAll('#aTabs button').forEach(function(b){ b.classList.toggle('on', b.dataset.t === t); });
+  document.querySelectorAll('.aba').forEach(function(a){ a.style.display = a.dataset.a === t ? '' : 'none'; });
+  if (t === 'func') carregarFuncs();
+  if (t === 'batidas'){ if (!$('aData').value) $('aData').value = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10); carregarBatidas(); }
+  if (t === 'rel') prepararRelatorio();
+  if (t === 'local') carregarLocal();
+  if (t === 'term') carregarTerms();
+}
+
+function carregarFuncs(){
+  $('aFuncs').textContent = 'Carregando...';
+  adm('adminFuncionarios').then(function(l){
+    admFuncs = l;
+    $('aFuncs').innerHTML = l.length ? l.map(function(f, i){
+      return '<div class="func"><div><b>' + esc(f.nome) + '</b><small>' + esc(f.cargo || '') + '</small><div style="margin-top:4px">' +
+        '<span class="tag ' + (f.rosto ? 's' : 'n') + '">' + (f.rosto ? 'Rosto ✓' : 'Sem rosto') + '</span>' +
+        '<span class="tag ' + (f.login ? 's' : 'n') + '">' + (f.login ? 'Login: ' + esc(f.login) : 'Sem login') + '</span></div></div>' +
+        '<div><button onclick="abrirRosto(' + i + ')">' + (f.rosto ? 'Refazer rosto' : 'Cadastrar rosto') + '</button>' +
+        '<button class="sec" onclick="abrirLogin(' + i + ')">' + (f.login ? 'Trocar senha' : 'Criar login') + '</button></div></div>';
+    }).join('') : 'Nenhum colaborador ativo no Futura DP.';
+  }).catch(function(e){ $('aFuncs').innerHTML = '<div class="msg erro">' + esc(e.message) + '</div>'; });
+}
+
+var funcSel = null, capCad = null;
+function abrirRosto(i){
+  funcSel = admFuncs[i];
+  $('mRostoNome').textContent = funcSel.nome;
+  $('mConsent').checked = false; $('mCam').style.display = 'none'; $('mBtnCap').disabled = false; msg('mMsg');
+  abrir('mRosto');
+}
+function capturarCadastro(){
+  if (!$('mConsent').checked) return msg('mMsg', 'Marque a autorização do colaborador antes de cadastrar.', 'erro');
+  msg('mMsg'); $('mBtnCap').disabled = true; $('mCam').style.display = 'block'; $('mStatus').textContent = 'Abrindo a câmera...';
+  Promise.all([abrirCamera('mVideo'), carregarModelos()]).then(function(){
+    capCad = capturarRosto('mVideo', 'mGuia', 'mStatus', { amostras: 3, tempoMax: 90000 });
+    return capCad;
+  }).then(function(r){
+    $('mStatus').textContent = 'Salvando...';
+    return adm('adminCadastrarRosto', { funcId: funcSel.id, descritores: r.descritores, foto: r.foto, consentimento: true });
+  }).then(function(){
+    fecharCamera('mVideo'); $('mCam').style.display = 'none';
+    msg('mMsg', 'Rosto de ' + funcSel.nome + ' cadastrado ✓', 'ok');
+    carregarFuncs();
+  }).catch(function(e){
+    fecharCamera('mVideo'); $('mCam').style.display = 'none'; $('mBtnCap').disabled = false;
+    if (e.message === 'cancelado') return;
+    msg('mMsg', e.message === 'tempo' ? 'Não consegui capturar o rosto. Tente de novo com boa luz.' : e.message, 'erro');
+  });
+}
+function fecharRosto(){ if (capCad && capCad.ctl) capCad.ctl.cancelado = true; fecharCamera('mVideo'); fechar('mRosto'); }
+
+function abrirLogin(i){
+  funcSel = admFuncs[i];
+  $('mLoginNome').textContent = funcSel.nome;
+  $('mLogLogin').value = funcSel.login || (funcSel.apelido || funcSel.nome.split(' ')[0]).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9._-]/g, '');
+  $('mLogSenha').value = ''; msg('mLogMsg');
+  abrir('mLogin');
+}
+function salvarLogin(){
+  msg('mLogMsg', 'Salvando...');
+  adm('adminSalvarLogin', { funcId: funcSel.id, login: $('mLogLogin').value, senha: $('mLogSenha').value }).then(function(){
+    msg('mLogMsg', 'Login salvo ✓ Passe para o colaborador: login "' + $('mLogLogin').value.trim().toLowerCase() + '" e a senha que você digitou.', 'ok');
+    carregarFuncs();
+  }).catch(function(e){ msg('mLogMsg', e.message, 'erro'); });
+}
+
+function carregarBatidas(){
+  $('aBatidas').textContent = 'Carregando...';
+  adm('adminBatidas', { data: $('aData').value }).then(function(l){
+    $('aBatidas').innerHTML = l.length ? '<table><tr><th>Colaborador</th><th>Hora</th><th>Tipo</th><th>Onde</th><th>Foto</th></tr>' + l.map(function(b){
+      return '<tr><td>' + esc(b.nome) + '</td><td><b>' + esc(b.hora) + '</b></td><td>' + esc(b.tipo) + '</td><td>' + esc(b.origem) +
+        (b.distancia !== '' ? '<br><small>' + esc(b.distancia) + ' m da escola</small>' : '') + '</td><td>' +
+        (b.foto ? '<a href="' + esc(b.foto) + '" target="_blank">ver</a>' : '') + '</td></tr>';
+    }).join('') + '</table>' : '<p class="pequeno">Nenhuma batida nesse dia.</p>';
+  }).catch(function(e){ $('aBatidas').innerHTML = '<div class="msg erro">' + esc(e.message) + '</div>'; });
+}
+
+function isoLocal(d){ return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
+function prepararRelatorio(){
+  if (!$('rIni').value){
+    var h = new Date();
+    $('rIni').value = isoLocal(new Date(h.getFullYear(), h.getMonth(), 1));
+    $('rFim').value = isoLocal(new Date(h.getFullYear(), h.getMonth() + 1, 0));
+  }
+  var sel = $('rFunc'), atual = sel.value;
+  var preencher = function(l){ sel.innerHTML = '<option value="">Todos</option>' + l.map(function(f){ return '<option value="' + esc(f.id) + '">' + esc(f.nome) + '</option>'; }).join(''); sel.value = atual; };
+  if (admFuncs.length) preencher(admFuncs);
+  else adm('adminFuncionarios').then(function(l){ admFuncs = l; preencher(l); }).catch(function(){});
+}
+var SEMANA = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+function dataBr(s){ var p = s.split('-'); return p[2] + '/' + p[1] + ' <small>' + SEMANA[new Date(s + 'T12:00:00').getDay()] + '</small>'; }
+function corDif(txt, min){ return min === null || min === undefined || txt === '' ? '' : '<span class="' + (min < 0 ? 'neg' : (min > 0 ? 'pos' : '')) + '">' + esc(txt) + '</span>'; }
+function gerarRelatorio(){
+  $('rOut').innerHTML = 'Gerando...';
+  adm('adminRelatorio', { funcId: $('rFunc').value, ini: $('rIni').value, fim: $('rFim').value }).then(function(l){
+    var tit = '<p class="pequeno">Período: ' + $('rIni').value.split('-').reverse().join('/') + ' a ' + $('rFim').value.split('-').reverse().join('/') + '</p>';
+    $('rOut').innerHTML = tit + '<div class="rel">' + (l.map(function(f){
+      if (!f.dias.length) return '<h3>' + esc(f.nome) + '</h3><p class="pequeno">Sem escala e sem batidas no período.</p>';
+      return '<h3>' + esc(f.nome) + '</h3><table><tr><th>Data</th><th>Escala</th><th>Batidas (reais)</th><th>Trabalhado</th><th>Diferença</th><th>Observação</th></tr>' +
+        f.dias.map(function(d){
+          var p = d.previsto;
+          var escTxt = !p ? '<small>sem escala</small>' : (p.entrada ? esc(p.entrada) + '–' + esc(p.saida) + (p.intervalo ? '<br><small>intervalo ' + esc(p.intervalo) + '</small>' : '') + '<br><small>previsto ' + esc(p.horas) + '</small>' : '<small>' + esc((d.tipo || '').toLowerCase()) + '</small>');
+          var bat = d.batidas.length ? d.batidas.map(esc).join(' · ') + (d.intervalo ? '<br><small>intervalos: ' + esc(d.intervalo) + '</small>' : '') : '—';
+          return '<tr><td>' + dataBr(d.data) + '</td><td>' + escTxt + '</td><td>' + bat + '</td><td>' + esc(d.trabalhado) + '</td><td>' + corDif(d.diferenca, d.difMin) + '</td><td><small>' + esc(d.obs) + '</small></td></tr>';
+        }).join('') +
+        '<tr class="tot"><td colspan="3">Total do período (dias encerrados) — previsto ' + esc(f.totPrevisto) + '</td><td>' + esc(f.totTrabalhado) + '</td><td>' + corDif(f.totDiferenca, f.totDifMin) + '</td><td></td></tr></table>';
+    }).join('') || '<p class="pequeno">Nenhum colaborador.</p>') + '</div>';
+  }).catch(function(e){ $('rOut').innerHTML = '<div class="msg erro">' + esc(e.message) + '</div>'; });
+}
+
+function carregarLocal(){
+  adm('adminConfig').then(function(c){
+    $('aRaio').value = c.raio;
+    if (c.lat) msg('aLocalInfo', 'Local salvo: ' + c.lat.toFixed(6) + ', ' + c.lng.toFixed(6) + ' — distância permitida: ' + c.raio + ' m', 'ok');
+    else msg('aLocalInfo', 'O local da escola ainda NÃO foi definido. Sem isso, ninguém consegue bater o ponto pelo celular.', 'aviso');
+  }).catch(function(e){ msg('aLocalInfo', e.message, 'erro'); });
+}
+function definirLocal(){
+  msg('aLocalMsg', 'Pegando a localização... aguarde até 20 segundos.');
+  iniciarGPS();
+  esperarGPS(20000).then(function(g){
+    pararGPS();
+    if (g.precisao > 60) msg('aLocalMsg', 'Atenção: a precisão foi de ± ' + Math.round(g.precisao) + ' m. O ideal é fazer pelo celular com GPS ligado.', 'aviso');
+    return adm('adminDefinirEscola', { lat: g.lat, lng: g.lng }).then(function(){
+      if (g.precisao <= 60) msg('aLocalMsg', 'Local da escola salvo ✓ (precisão ± ' + Math.round(g.precisao) + ' m)', 'ok');
+      carregarLocal();
+    });
+  }).catch(function(e){ pararGPS(); msg('aLocalMsg', e.message, 'erro'); });
+}
+function salvarRaio(){
+  adm('adminDefinirEscola', { raio: $('aRaio').value }).then(function(){ msg('aLocalMsg', 'Distância salva ✓', 'ok'); carregarLocal(); })
+    .catch(function(e){ msg('aLocalMsg', e.message, 'erro'); });
+}
+
+function carregarTerms(){
+  adm('adminTerminais').then(function(l){
+    var ativos = l.filter(function(t){ return t.ativo === '1'; });
+    $('aTerms').innerHTML = ativos.length ? ativos.map(function(t){
+      return '<div class="func"><div><b>' + esc(t.nome) + '</b><small>desde ' + esc(t.criadoEm.slice(0, 10).split('-').reverse().join('/')) + '</small></div>' +
+        '<button class="perigo" onclick="desativarTerm(\'' + esc(t.id) + '\')">Desativar</button></div>';
+    }).join('') : '<p class="pequeno">Nenhum terminal ainda.</p>';
+  }).catch(function(e){ $('aTerms').innerHTML = '<div class="msg erro">' + esc(e.message) + '</div>'; });
+}
+function criarTerminal(){
+  var n = $('aTermNome').value.trim();
+  if (!n) return msg('aTermMsg', 'Dê um nome para este aparelho.', 'erro');
+  msg('aTermMsg', 'Autorizando...');
+  adm('adminCriarTerminal', { nome: n }).then(function(d){
+    ls('pf_terminal', d.terminal); ls('pf_terminalNome', n);
+    admTok = null; try { sessionStorage.removeItem('pf_adm'); } catch(e) {}
+    if (location.hash) history.replaceState(null, '', location.pathname);
+    abrirTerminal();
+  }).catch(function(e){ msg('aTermMsg', e.message, 'erro'); });
+}
+function desativarTerm(id){
+  adm('adminDesativarTerminal', { id: id }).then(carregarTerms).catch(function(e){ msg('aTermMsg', e.message, 'erro'); });
+}
+function trocarSenha(){
+  adm('adminTrocarSenha', { nova: $('aNova').value }).then(function(){ $('aNova').value = ''; msg('aSenhaMsg', 'Senha alterada ✓', 'ok'); })
+    .catch(function(e){ msg('aSenhaMsg', e.message, 'erro'); });
+}
+
+iniciar();
 </script>
 </body>
 </html>
